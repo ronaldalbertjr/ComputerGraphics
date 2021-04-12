@@ -95,13 +95,11 @@
         var result = [];
         for (var i = 0; i < m1.length; i++) {
             result[i] = [];
-            for (var j = 0; j < m2[0].length; j++) {
-                var sum = 0;
-                for (var k = 0; k < m1[0].length; k++) {
-                    sum += m1[i][k] * m2[k][j];
-                }
-                result[i][j] = sum;
+            var sum = 0;
+            for (var k = 0; k < m1[0].length; k++) {
+                sum += m1[i][k] * m2[k];
             }
+            result[i] = sum;
         }
         return result;
     }
@@ -109,12 +107,13 @@
     function applyTransformation( primitive ) {
         var vertices = primitive.vertices;
         var xform = primitive.xform;
+        var transformedVertices = []; 
+
         for(var i = 0; i < vertices.length; i++) {
             vertices[i][2] = 1;
+            transformedVertices[i] = _multiplyMatrices(xform, vertices[i]);
+            console.log(transformedVertices)
         }
-
-        var transformedVertices = _multiplyMatrices(vertices, xform);
-
         vertices = []
         for(var i = 0; i < transformedVertices.length; i++) {
             vertices[i] = []
@@ -130,6 +129,7 @@
 
         var newScene = [];
         var sectionLength = (2*Math.PI)/n;
+        var circleHasXform = primitive.hasOwnProperty('xform');
 
         for(var i = 0; i <= n; i++) {
             newScene.push({
@@ -140,24 +140,13 @@
                 ],
                 color: primitive.color,
             })
+            if(circleHasXform) newScene[i]['xform'] = primitive.xform;
         }
 
         return newScene;
 
     }
 
-    function _transposeMatrix( m ) {
-        var transposedM = []
-
-        for (var i = 0; i < m.length; i++) {
-            transposedM[i] = [];
-            for (var j = 0; j < m[0].length; j++){
-                transposedM[i][j] = m[j][i];
-            }
-        }
-
-        return transposedM;
-    }
 
         
     
@@ -194,14 +183,22 @@
 
             rasterize: function() {
                 var color;
-                var bounding_box
+                var bounding_box;
                 // In this loop, the image attribute must be updated after the rasterization procedure.
                 for( var primitive of this.scene ) {
-                    
+            
+                    if(primitive.shape == 'circle') {
+                        var circleRasterized = rasterizeCircle(primitive, 100);
+                        this.scene.push(...circleRasterized);
+                        
+                        continue;
+                    }
+
                     if(primitive.hasOwnProperty('xform'))
                         primitive.vertices = applyTransformation( primitive );
 
                     bounding_box = generateBoundingBox( primitive );
+                    
                     for (var i = bounding_box.min_x; i <= bounding_box.max_x; i++) {
                         var x = i + 0.5;
                         for( var j = bounding_box.min_y; j <= bounding_box.max_y; j++) {
