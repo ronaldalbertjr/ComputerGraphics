@@ -78,6 +78,10 @@
                 max_y = vertices[i][1] > max_y ? vertices[i][1] : max_y;
             }
         }
+        min_x = Math.floor(min_x);
+        min_y = Math.floor(min_y);
+        max_x = Math.ceil(max_x);
+        max_y = Math.ceil(max_y);
 
         return {
             min_x,
