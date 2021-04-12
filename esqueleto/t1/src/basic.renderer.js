@@ -120,6 +120,28 @@
         return vertices;
     }
 
+    function rasterizeCircle( primitive, n ) {
+        var center = primitive.center;
+        var radius = primitive.radius;
+
+        var newScene = [];
+        var sectionLength = (2*Math.PI)/n;
+
+        for(var i = 0; i <= n; i++) {
+            newScene.push({
+                shape: "triangle",
+                vertices: [ center, 
+                    [(Math.cos(i * sectionLength) * radius) + center[0], (Math.sin(i * sectionLength)*radius) + center[1]], 
+                    [(Math.cos(( i + 1 ) * sectionLength) * radius) + center[0], (Math.sin((i + 1) * sectionLength) * radius) + center[1]]
+                ],
+                color: primitive.color,
+            })
+        }
+
+        return newScene;
+
+    }
+
     function _transposeMatrix( m ) {
         var transposedM = []
 
@@ -168,20 +190,18 @@
 
             rasterize: function() {
                 var color;
-         
+                var bounding_box
                 // In this loop, the image attribute must be updated after the rasterization procedure.
                 for( var primitive of this.scene ) {
                     
                     if(primitive.hasOwnProperty('xform'))
                         primitive.vertices = applyTransformation( primitive );
 
-                    var bounding_box = generateBoundingBox( primitive );
-
+                    bounding_box = generateBoundingBox( primitive );
                     for (var i = bounding_box.min_x; i <= bounding_box.max_x; i++) {
                         var x = i + 0.5;
                         for( var j = bounding_box.min_y; j <= bounding_box.max_y; j++) {
                             var y = j + 0.5;
-
                             // First, we check if the pixel center is inside the primitive 
                             if ( inside( x, y, primitive ) ) {
                                 // only solid colors for now
