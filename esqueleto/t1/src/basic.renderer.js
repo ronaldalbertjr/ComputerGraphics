@@ -53,6 +53,30 @@
         }
     }
 
+    function insideByWindingNumber( x, y, primitive) {
+        var  wn = 0;
+        var vertices = primitive.vertices;
+        var v;
+        var v1;
+
+        for (var i = 0;  i < vertices.length; i++ ) {
+
+            if(i != vertices.length - 1) {
+                v = vertices[i]
+                v1 = vertices[i + 1];
+            }
+            else {
+                v = vertices[i]
+                v1 = vertices[0];
+            }
+             
+            if((v[1] < v1[1]) &&  ( (v1[0] - v[0]) * (y - v[1]) > (v1[1] - v[1]) * (x - v[0]) )) wn++;
+            else if((v[1] > v1[1]) &&  ( (v1[0] - v[0]) * (y - v[1]) < (v1[1] - v[1]) * (x - v[0]) )) wn--;
+        }
+
+        return !(wn == 0)
+    }
+
     function generateBoundingBox( primitive ) {
         var shape = primitive.shape;
         if(shape == "circle") {
@@ -188,7 +212,7 @@
                 for( var primitive of this.scene ) {
             
                     if(primitive.shape == 'circle') {
-                        var circleRasterized = rasterizeCircle(primitive, 100);
+                        var circleRasterized = rasterizeCircle(primitive, 1000);
                         this.scene.push(...circleRasterized);
                         
                         continue;
@@ -204,7 +228,7 @@
                         for( var j = bounding_box.min_y; j <= bounding_box.max_y; j++) {
                             var y = j + 0.5;
                             // First, we check if the pixel center is inside the primitive 
-                            if ( inside( x, y, primitive ) ) {
+                            if ( insideByWindingNumber( x, y, primitive ) ) {
                                 // only solid colors for now
                                 color = nj.array(primitive.color);
                                 this.set_pixel( i, this.height - (j + 1), color );
