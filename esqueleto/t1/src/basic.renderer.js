@@ -136,7 +136,6 @@
         for(var i = 0; i < vertices.length; i++) {
             vertices[i][2] = 1;
             transformedVertices[i] = _multiplyMatrices(xform, vertices[i]);
-            console.log(transformedVertices)
         }
         vertices = []
         for(var i = 0; i < transformedVertices.length; i++) {
