@@ -112,7 +112,7 @@
         }
     }
 
-    function _multiplyMatrices( m1, m2 ) {
+    function _multiplyMatrixVector( m1, m2 ) {
         var result = [];
         for (var i = 0; i < m1.length; i++) {
             result[i] = [];
@@ -132,7 +132,7 @@
 
         for(var i = 0; i < vertices.length; i++) {
             vertices[i][2] = 1;
-            transformedVertices[i] = _multiplyMatrices(xform, vertices[i]);
+            transformedVertices[i] = _multiplyMatrixVector(xform, vertices[i]);
         }
         vertices = []
         for(var i = 0; i < transformedVertices.length; i++) {
