@@ -23,21 +23,16 @@
             var L = [];
             var vertices = primitive.vertices;
 
-            for (var i = 0; i < vertices.length; i++ ) {
+            for (var i = 0, j = vertices.length - 1; i < vertices.length; i++ ) {
                 var n = [];
 
-                if(i != vertices.length - 1) {
-                    n[0] = - ( vertices[i + 1][1] - vertices[i][1] );
-                    n[1] =  vertices[i + 1][0] - vertices[i][0];
-                }
-                else {
-                    n[0] = - ( vertices[0][1] - vertices[i][1] );
-                    n[1] =  vertices[0][0] - vertices[i][0];
-                }
+                n[0] = - ( vertices[i][1] - vertices[j][1] );
+                n[1] =  vertices[i][0] - vertices[j][0];
+                
 
                 var vec_to_point = [];
-                vec_to_point[0] = x - vertices[i][0];
-                vec_to_point[1] = y - vertices[i][1];
+                vec_to_point[0] = x - vertices[j][0];
+                vec_to_point[1] = y - vertices[j][1];
 
                 L[i] = vec_to_point[0] * n[0] +  vec_to_point[1] * n[1];
             }
@@ -59,22 +54,24 @@
         var v;
         var v1;
 
-        for (var i = 0;  i < vertices.length; i++ ) {
+        for (var i = 0, j = vertices.length - 1; i < vertices.length; j = i++) {
 
-            if(i != vertices.length - 1) {
-                v = vertices[i]
-                v1 = vertices[i + 1];
+            v = vertices[j];
+            v1 = vertices[i];
+            
+            if ( v[1] <= y ) { 
+                if ( y < v1[1] )  
+                    if ( (v1[0] - v[0]) * (y - v[1]) - (v1[1] - v[1]) * (x - v[0]) > 0 ) 
+                        wn++;
             }
-            else {
-                v = vertices[i]
-                v1 = vertices[0];
+            else { 
+                if( y >= v1[1] ) 
+                    if ( (v1[0] - v[0]) * (y - v[1]) - (v1[1] - v[1]) * (x - v[0]) < 0 ) 
+                        wn--;
             }
-             
-            if((v[1] < v1[1]) &&  ( (v1[0] - v[0]) * (y - v[1]) > (v1[1] - v[1]) * (x - v[0]) )) wn++;
-            else if((v[1] > v1[1]) &&  ( (v1[0] - v[0]) * (y - v[1]) < (v1[1] - v[1]) * (x - v[0]) )) wn--;
         }
 
-        return !(wn == 0)
+        return wn != 0
     }
 
     function generateBoundingBox( primitive ) {
