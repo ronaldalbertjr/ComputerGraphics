@@ -208,7 +208,7 @@
                 for( var primitive of this.scene ) {
             
                     if(primitive.shape == 'circle') {
-                        var circleRasterized = rasterizeCircle(primitive, 1000);
+                        var circleRasterized = rasterizeCircle(primitive, 100);
                         this.scene.push(...circleRasterized);
                         
                         continue;
