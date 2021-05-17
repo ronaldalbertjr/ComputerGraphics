@@ -18,9 +18,9 @@
 
     Object.assign( ImageProcesser.prototype, {
 
-        convolution(convolution_array){
+        convolution(convolution_matrix){
             var sum;
-            var n = Math.sqrt(convolution_array.length);
+            var n = convolution_matrix.length;
 
             for(var i = ((n-1)/2); i < this.height - ((n-1)/2); i++) {
                 for(var j = ((n-1)/2); j < this.width - ((n-1)/2); j++) {
@@ -28,7 +28,8 @@
                         sum = 0;
                         for(var i2 = -((n-1)/2); i2 < ((n-1)/2) + 1; i2++) {
                             for(var j2 = -((n-1)/2); j2 < ((n-1)/2) + 1; j2++) {
-                                sum += this.img.selection.data[ (((i + i2) * this.width) + (j + j2))*4 + k ] * convolution_array[((i2 + ((n-1)/2)) * n) + (j2 + ((n-1)/2))];
+                                sum += this.img.selection.data[ (((i + i2) * this.width) + (j + j2))*4 + k ] * 
+                                    convolution_matrix[i2 + ((n-1)/2)][j2 + ((n-1)/2)];
                             }
                         }
                         this.transformed.selection.data[((i * this.width) + j)*4 + k ] = sum;
@@ -38,10 +39,10 @@
 
         },
 
-        convolution_extend (convolution_array) {
+        convolution_extend (convolution_matrix) {
             var sum;
             var extended_image = this.img.selection.data;
-            var n = Math.sqrt(convolution_array.length);
+            var n = convolution_matrix.length;
 
             for(var i = 0; i < this.height; i++) {
                 extended_image[ ((i * this.width) - 1)*4 + k ] = extended_image[ ((i * this.width) + j)*4 + k ];
@@ -59,7 +60,8 @@
                         for(var i2 = -((n-1)/2); i2 < ((n-1)/2) + 1; i2++) {
                             for(var j2 = -((n-1)/2); j2 < ((n-1)/2) + 1; j2++) {
 
-                                sum += extended_image[ (((i + i2) * this.width) + (j + j2))*4 + k ] * convolution_array[((i2 + ((n-1)/2)) * n) + (j2 + ((n-1)/2))];
+                                sum += extended_image[ (((i + i2) * this.width) + (j + j2))*4 + k ] * 
+                                    convolution_matrix[i2 + ((n-1)/2)][j2 + ((n-1)/2)];
                             }
                         }
                         this.transformed.selection.data[ ((i * this.width) + j)*4 + k ] = sum;
@@ -68,10 +70,10 @@
             }
         },
 
-        sobel_filter(convolution_array_x, convolution_array_y){
+        sobel_filter(convolution_matrix_x, convolution_matrix_y){
             var sx;
             var sv;
-            var n = Math.sqrt(convolution_array_x.length);
+            var n = convolution_matrix_x.length;
 
             for(var i = ((n-1)/2); i < this.height - ((n-1)/2); i++) {
                 for(var j = ((n-1)/2); j < this.width - ((n-1)/2); j++) {
@@ -79,13 +81,15 @@
                         sx = 0;
                         for(var i2 = -((n-1)/2); i2 < ((n-1)/2) + 1; i2++) {
                             for(var j2 = -((n-1)/2); j2 < ((n-1)/2) + 1; j2++) {
-                                sx += this.img.selection.data[ (((i + i2) * this.width) + (j + j2))*4 + k ] * convolution_array_x[((i2 + ((n-1)/2)) * n) + (j2 + ((n-1)/2))];
+                                sx += this.img.selection.data[ (((i + i2) * this.width) + (j + j2))*4 + k ] 
+                                    * convolution_matrix_x[i2 + ((n-1)/2)][j2 + ((n-1)/2)];
                             }
                         }
                         sv = 0;
                         for(var i2 = -((n-1)/2); i2 < ((n-1)/2) + 1; i2++) {
                             for(var j2 = -((n-1)/2); j2 < ((n-1)/2) + 1; j2++) {
-                                sv += this.img.selection.data[ (((i + i2) * this.width) + (j + j2))*4 + k ] * convolution_array_y[((i2 + ((n-1)/2)) * n) + (j2 + ((n-1)/2))];
+                                sv += this.img.selection.data[ (((i + i2) * this.width) + (j + j2))*4 + k ] * 
+                                    convolution_matrix_y[i2 + ((n-1)/2)][j2 + ((n-1)/2)];
                             }
                         }
                         this.transformed.selection.data[((i * this.width) + j)*4 + k ] = Math.sqrt(sx * sx + sv * sv);
@@ -95,11 +99,11 @@
 
         },
 
-        sobel_filter_extend (convolution_array_x, convolution_array_y) {
+        sobel_filter_extend (convolution_matrix_x, convolution_matrix_y) {
             var sx;
             var sv;
             var extended_image = this.img.selection.data;
-            var n = Math.sqrt(convolution_array_x.length);
+            var n = convolution_matrix_x.length;
 
             for(var i = 0; i < this.height; i++) {
                 extended_image[ ((i * this.width) - 1)*4 + k ] = extended_image[ ((i * this.width) + j)*4 + k ];
@@ -116,13 +120,15 @@
                         sx = 0;
                         for(var i2 = -((n-1)/2); i2 < ((n-1)/2) + 1; i2++) {
                             for(var j2 = -((n-1)/2); j2 < ((n-1)/2) + 1; j2++) {
-                                sx += this.img.selection.data[ (((i + i2) * this.width) + (j + j2))*4 + k ] * convolution_array_x[((i2 + ((n-1)/2)) * n) + (j2 + ((n-1)/2))];
+                                sx += this.img.selection.data[ (((i + i2) * this.width) + (j + j2))*4 + k ] * 
+                                    convolution_matrix_x[i2 + ((n-1)/2)][j2 + ((n-1)/2)];
                             }
                         }
                         sv = 0;
                         for(var i2 = -((n-1)/2); i2 < ((n-1)/2) + 1; i2++) {
                             for(var j2 = -((n-1)/2); j2 < ((n-1)/2) + 1; j2++) {
-                                sv += this.img.selection.data[ (((i + i2) * this.width) + (j + j2))*4 + k ] * convolution_array_y[((i2 + ((n-1)/2)) * n) + (j2 + ((n-1)/2))];
+                                sv += this.img.selection.data[ (((i + i2) * this.width) + (j + j2))*4 + k ] * 
+                                    convolution_matrix_y[i2 + ((n-1)/2)][j2 + ((n-1)/2)];
                             }
                         }
                         this.transformed.selection.data[((i * this.width) + j)*4 + k ] = Math.sqrt(sx * sx + sv * sv);
@@ -132,35 +138,35 @@
         },
 
         apply_kernel: function(border = 'icrop') {
-            let convolution_array = [1];
-            let convolution_array_x = [1];
-            let convolution_array_y = [1];
+            let convolution_matrix = [1];
+            let convolution_matrix_x = [1];
+            let convolution_matrix_y = [1];
             switch(this.kernel) {
                 case 'box':
-                    convolution_array = [1/9, 1/9, 1/9, 1/9, 1/9, 1/9, 1/9, 1/9, 1/9];
+                    convolution_matrix = [[1/9, 1/9, 1/9], [1/9, 1/9, 1/9], [1/9, 1/9, 1/9]];
                     break;
                 case 'sobel':
-                    convolution_array_x = [-1/8, 0, 1/8, -1/4, 0, 1/4, -1/8, 0, 1/8];
-                    convolution_array_y = [1/8, 1/4, 1/8, 0, 0, 0, -1/8, -1/4, -1/8];
+                    convolution_matrix_x = [[-1/8, 0, 1/8], [-1/4, 0, 1/4], [-1/8, 0, 1/8]];
+                    convolution_matrix_y = [[1/8, 1/4, 1/8], [0, 0, 0], [-1/8, -1/4, -1/8]];
                     break;
                 case 'laplace':
-                    convolution_array = [0, -1, 0, -1, 4, -1, 0, -1, 0];
+                    convolution_matrix = [[0, -1, 0], [-1, 4, -1], [0, -1, 0]];
                     break;
             }
 
             if(border === 'icrop')
             {   if(this.kernel === 'sobel')
-                    this.sobel_filter(convolution_array_x, convolution_array_y);
+                    this.sobel_filter(convolution_matrix_x, convolution_matrix_y);
                 else {
-                    this.convolution(convolution_array);
+                    this.convolution(convolution_matrix);
                 }
             }
             else if(border === 'extend')
             {
                 if(this.kernel === 'sobel')
-                    this.sobel_filter_extend(convolution_array_x, convolution_array_y);
+                    this.sobel_filter_extend(convolution_matrix_x, convolution_matrix_y);
                 else 
-                    this.convolution_extend(convolution_array);
+                    this.convolution_extend(convolution_matrix);
                 
             }
 
