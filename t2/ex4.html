@@ -25,6 +25,7 @@
     
     <script>
       function processImage() {
+        
         var kernel = "laplace"; 
         var xform = nj.array([[0, -1, 0], [1, 0, 0], [0, 0, 1]]);
         var imgprocesser = new ImageProcessing.ImageProcesser(gray_img, kernel, xform);

@@ -24,11 +24,12 @@
     <script src ="src/img.processing.js"> </script>
     
     <script>
-
+      function processImage() {
         var kernel = "sobel"; 
         var imgprocesser = new ImageProcessing.ImageProcesser(gray_img, kernel, null, 'extend');
 
-        imgprocesser.update();
+        return imgprocesser.update();
+      }
 
     </script>
 

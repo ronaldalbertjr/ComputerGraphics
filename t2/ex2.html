@@ -25,11 +25,12 @@
     
     <script>
 
-
+      function processImage() {
         var xform = nj.array([[1, 0.5, 0], [0, 0.87, 0], [0, 0, 1]]);
         var imgprocesser = new ImageProcessing.ImageProcesser(gray_img, null, xform);
 
-        imgprocesser.update();
+        return imgprocesser.update();
+      }
 
     </script>
 
