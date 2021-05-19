@@ -43,7 +43,7 @@
             var sum;
             var extended_image = this.img.selection.data;
             var n = convolution_matrix.length;
-
+            
             for(var i = 0; i < this.height; i++) {
                 extended_image[ ((i * this.width) - 1)*4 + k ] = extended_image[ ((i * this.width) + j)*4 + k ];
                 extended_image[ ((i * this.width) + this.width)*4 + k ] = extended_image[ ((i * this.width) + j)*4 + k ]; 
@@ -74,8 +74,9 @@
             var sx;
             var sv;
             var n = convolution_matrix_x.length;
-
+            
             for(var i = ((n-1)/2); i < this.height - ((n-1)/2); i++) {
+                
                 for(var j = ((n-1)/2); j < this.width - ((n-1)/2); j++) {
                     for(var k = 0; k < 3; k++) {
                         sx = 0;
@@ -104,7 +105,7 @@
             var sv;
             var extended_image = this.img.selection.data;
             var n = convolution_matrix_x.length;
-
+            
             for(var i = 0; i < this.height; i++) {
                 extended_image[ ((i * this.width) - 1)*4 + k ] = extended_image[ ((i * this.width) + j)*4 + k ];
                 extended_image[ ((i * this.width) + this.width)*4 + k ] = extended_image[ ((i * this.width) + j)*4 + k ]; 
@@ -150,16 +151,17 @@
                     convolution_matrix_y = [[1/8, 1/4, 1/8], [0, 0, 0], [-1/8, -1/4, -1/8]];
                     break;
                 case 'laplace':
-                    convolution_matrix = [[0, -1, 0], [-1, 4, -1], [0, -1, 0]];
+                    convolution_matrix = [[0, -1/4, 0], [-1/4, 1, -1/4], [0, -1/4, 0]];
                     break;
             }
 
             if(border === 'icrop')
-            {   if(this.kernel === 'sobel')
+            {   
+                if(this.kernel === 'sobel')
                     this.sobel_filter(convolution_matrix_x, convolution_matrix_y);
-                else {
+                else { 
                     this.convolution(convolution_matrix);
-                }
+                }    
             }
             else if(border === 'extend')
             {
