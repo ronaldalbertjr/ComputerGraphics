@@ -22,16 +22,27 @@
 
     <script src ="src/img.loader.js"> </script>
     <script src ="src/img.processing.js"> </script>
+
     
     <script>
 
-      function processImage() {
-        var kernel = "box"; 
-        var imgprocesser = new ImageProcessing.ImageProcesser(gray_img, kernel);
+      var kernel = "box"; 
+      var imgprocesses;
 
-        return imgprocesser.update();
+      function wait() {
+        if(img_load_flag == false) {
+            window.setTimeout(wait, 100); /* this checks the flag every 100 milliseconds*/
+        } 
+        else {
+          imgprocesser = new ImageProcessing.ImageProcesser(gray_img, kernel, null, 'extend');
+          imgprocesser.update();
+        } 
       }
+
+      wait();
+
         
+
     </script>
 
 
