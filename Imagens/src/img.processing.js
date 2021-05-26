@@ -98,6 +98,140 @@
             return imgTransformed;
         },
 
+        cut_matrix(rowToRemove, columnToRemove, originalMatrix)
+        {
+            let result = [];
+            let n = originalMatrix.length;
+
+            for (let i = 0, j = 0; i < n; i++)
+            {
+                if (i == rowToRemove)
+                    continue;
+
+                result[j] = []
+                for (let k = 0, u = 0; k < n; k++)
+                {
+                    if (k == columnToRemove)
+                        continue;
+
+                    result[j][u] = originalMatrix[i][k];
+                    u++;
+                }
+                j++;
+            }
+
+            return result;
+        },
+
+        cofactor(matrix, i, j) {
+            return ((-1)**(i + j)) * this.laplace(matrix);
+        },
+
+        laplace(matrix) {
+
+            let originalMatrix = matrix.map((x) => [...x]);
+            let result = 0;
+
+            var n = matrix.length;
+            if (n == 1)
+            {
+                return matrix[0, 0];
+            }
+            for (var j = 0; j < n; j++)
+            {
+                matrix = this.cut_matrix(0, j, originalMatrix);
+
+                result += originalMatrix[0][j] * this.cofactor(matrix, 0, j);
+            }
+
+            return result;
+        },
+
+        transpose_matrix(matrix) {
+            let result_matrix = [];
+            var n = matrix.length;
+
+
+            for (let i = 0; i < n; i++)
+            {
+                result_matrix[i] = [];
+                for (let j = 0; j < n; j++)
+                {
+                    result_matrix[i][j] = matrix[j][i];
+                }
+            }
+            return result_matrix;
+        },
+
+        scale_matrix(matrix, value) {
+            let finalMatrix = []
+            let n = matrix.length;
+
+            for (let i = 0; i < n; i++)
+            {
+                finalMatrix[i] = []
+                for (let j = 0; j < n; j++)
+                {
+                    finalMatrix[i][j] = matrix[i][j] * value;
+                }
+            }
+            return finalMatrix;
+        },
+
+        inverse_matrix(matrix) {
+            let originalMatrix = matrix.map((x) => [...x]);
+            let cofactor = [];
+            let adjugate_matrix = []
+            let result = [];
+            let n = matrix.length;
+
+            for (let i = 0; i < n; i++)
+            {
+                cofactor[i] = []
+                for (let j = 0; j < n; j++)
+                {
+                    matrix = this.cut_matrix(i, j, originalMatrix);
+                    cofactor[i][j] = this.cofactor(matrix, i, j);
+                }
+            }
+            adjugate_matrix = this.transpose_matrix(cofactor);
+            result = this.scale_matrix(adjugate_matrix, 1 / this.laplace(originalMatrix));
+            return result;
+        },
+
+        transformed_image(img, inverse_matrix) {
+            let position_i;
+            let position_j;
+            let a;
+            let b;
+            let x;
+            let y;
+            let imgToBeInverseMapped = img.clone();
+            let transformedImage = img.clone();
+
+            for(var i=0; i<this.height; i++) {
+                for(var j=0; j<this.width; j++) {
+                    x = i * inverse_matrix[0][0] + j * inverse_matrix[0][1];
+                    y = i * inverse_matrix[1][0] + j * inverse_matrix[1][1];
+
+                    position_i = Math.floor(x);
+                    position_j = Math.floor(y);
+                    a = x-position_i;
+                    b = y-position_j;
+
+                    
+                    for(let k=0; k<4; k++){
+                        transformedImage.selection.data[(i * this.width + j)*4 + k] = 
+                        (1-a)*(1-b)*imgToBeInverseMapped.selection.data[(position_i)*this.width*4+(position_j)*4+k]+
+                        a*(1-b)*imgToBeInverseMapped.selection.data[(position_i+1)*this.width*4+(position_j)*4+k]+
+                        a*b*imgToBeInverseMapped.selection.data[(position_i+1)*this.width*4+(position_j+1)*4+k]+
+                        (1-a)*b*imgToBeInverseMapped.selection.data[(position_i)*this.width*4+(position_j+1)*4+k]
+                    }
+                }
+            }
+
+            return transformedImage;
+        },
 
         apply_kernel: function(border = 'icrop') {
             let convolution_matrix_box_filter = [[1/9, 1/9, 1/9], [1/9, 1/9, 1/9], [1/9, 1/9, 1/9]];
@@ -117,15 +251,18 @@
                     this.transformed = this.sobel_filter(convolution_matrix_x_sobel_filter, convolution_matrix_y_sobel_filter, img);
                     break;
                 case 'laplace':
-                    this.transformed = this.convolution(convolution_matrix_laplace_filter, img  ); 
+                    this.transformed = this.convolution(convolution_matrix_laplace_filter, img ); 
                     break;
             }
 
         },
 
         apply_xform: function()  {
-            // Method to apply affine transform through inverse mapping (incomplete)
-            // You may create auxiliary functions/methods if you'd like
+            let transformationMatrix = this.xform.tolist();
+
+            let inverse = this.inverse_matrix(transformationMatrix);
+            
+            this.transformed = this.transformed_image(this.transformed, inverse);
         },
 
         update: function() {
