@@ -115,12 +115,12 @@ Object.assign( WaveAnimation.prototype, {
                 renderer.render(scene, camera);    
             })
         
-            
+        lowerArmTween.chain(inverseUpperArmTween);
         upperArmTween.chain( lowerArmTween );
         upperArmTween.start(); 
-        leftlowArmTween.start(650);
-        headtween.start(650);
-        inverseUpperArmTween.start(3500)
+        leftlowArmTween.start();
+        headtween.start();
+    
         
     },
     animate: function(time) {

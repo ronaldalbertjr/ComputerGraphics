@@ -279,6 +279,9 @@
             Sin: function(amount) {
                 return Math.abs(Math.sin(amount * 3 * Math.PI));
             },
+            SinMais: function(amount) {
+                return Math.abs(Math.sin(amount * 7 * Math.PI));
+            },
             Abs: function(amount) {
                 return (-Math.abs(amount - 0.5) + 0.5)*2
             },
@@ -289,6 +292,17 @@
                     return (-Math.abs(amount * 2 - 0.5) + 0.5) * 2;
                 else 
                     return (-Math.abs(amount * 2 - 1.5) + 0.5) * 2;
+            },
+            consRapidAbs: function(amount) {
+                if(amount >= 0.10 && amount <= 0.90)
+                    return 1
+                else if (amount < 0.10)
+                    return (-Math.abs(amount * 5 - 0.5) + 0.5) * 2;
+                else 
+                    return (-Math.abs(amount * 5 - 4.5) + 0.5) * 2;
+            },
+            Desc: function(amount){
+                
             }
         }
     };
